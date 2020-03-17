@@ -224,14 +224,15 @@ class _dataCaptureThread(object):
                                 timestamp_sec = self.getTimestamp(data_pc[10:18], timestamp_type)
                                 
                                 bytePos = 18
-                                
+                                #print('firmware type', self.firmwareType)
+
                                 #single return firmware (most common)
                                 if self.firmwareType == 1:
                                     #to account for first point's timestamp being increment in the loop
                                     timestamp_sec -= 0.00001
                                     
-                                    #Cartesian Coordinate System
-                                    if self.dataType == 0:
+                                    #Cartesian Coordinate System, 2 for HORIZON
+                                    if self.dataType == 0 or self.dataType == 2:
                                         for i in range(0,100):
                                             
                                             # X coordinate
@@ -482,12 +483,11 @@ class _dataCaptureThread(object):
                     #TODO: apply coordinate transformations to the raw X, Y, Z point cloud data based on the extrinsic parameters
                     #rotation definitions and the sequence they are applied is always a bit of a head scratcher, lots of different definitions
                     #Geospatial/Traditional Photogrammetry/Computer Vision/North America/Europe all use different approaches
-                    
                     #single return fimware
                     if self.firmwareType == 1:
                         
                         #Cartesian
-                        if self.dataType == 0:
+                        if self.dataType == 0 or self.dataType == 2:
                             csvFile.write("//X,Y,Z,Inten-sity,Time\n")
                             for i in range(0,lenData):
                                 coord1 = round(float(struct.unpack('<i',coord1s[i])[0])/1000.0,3)
@@ -782,8 +782,7 @@ class openpylivox(object):
                     if addr[1] == 65000:
                         if len(IPs) == 0:
                             goodData, cmdMessage, dataMessage, device_serial, typeMessage, ipRangeCode = self._info(binData)
-                            
-                            if typeMessage == "Mid-40":
+                            if typeMessage == "Mid-40" or typeMessage == 'Horizon':
                                 IPs.append(self._checkIP(addr[0]))
                                 Serials.append(device_serial)
                                 ipRangeCodes.append(ipRangeCode)
@@ -798,7 +797,7 @@ class openpylivox(object):
                             else:
                                 goodData, cmdMessage, dataMessage, device_serial, typeMessage, ipRangeCode = self._info(binData)
                             
-                                if typeMessage == "Mid-40":
+                                if typeMessage == "Mid-40" or typeMessage == 'Horizon':
                                     IPs.append(self._checkIP(addr[0]))
                                     Serials.append(device_serial)
                                     ipRangeCodes.append(ipRangeCode)
@@ -810,7 +809,7 @@ class openpylivox(object):
         
         if self.showMessages and opt:
             for i in range(0,len(IPs)):
-                print("   Found Mid-40 w. serial #" + Serials[i] + " at IP: " + IPs[i])
+                print("   Found Mid-40/Horizon w. serial #" + Serials[i] + " at IP: " + IPs[i])
             print()
         
         return IPs, Serials, ipRangeCodes

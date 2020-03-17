@@ -37,11 +37,11 @@ def singleSensorDemo():
     sensor.resetShowMessages()
           
     #easiest to try to automatically set the openpylivox sensor connection parameters and connect
-    connected = sensor.auto_connect()
+    #connected = sensor.auto_connect()
     
     #or if your computer has multiple IP address and the correct IP is not being automatically determined
     #you can force the computer IP to a manual address
-#    connected = sensor.auto_connect("192.168.1.20")
+    connected = sensor.auto_connect("192.168.5.12")
 
     #or manually define all IP addresses and ports (still need to properly configure your IP, Subnet, etc. on your computer)
                              #  computer IP       sensorIP    data port  command port
